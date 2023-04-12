@@ -1,0 +1,71 @@
+<p>Em nosso arquivo <code>reducer.js</code> (dentro de <code>src/store/modules/auth/reducer.js</code>) existe o seguinte case:</p><pre class="prettyprint linenums">case types.LOGIN_FAILURE: {
+  const newState = { ...initialState };
+  return newState;
+}</pre><p>Como estamos utilizando este case para "<strong>deslogar</strong>" os usuários, é necessário excluir a chave "<strong>Authorization</strong>" que adicionamos ao logar o usuário dos "<strong>defaults</strong>" do <strong>axios</strong>. </p><p>Para fazer isso é bastante simples:</p><p>Primeiro importe o <strong>axios</strong>;</p><pre class="prettyprint linenums">import axios from '../../../services/axios';</pre><p>Agora altere o case para apagar a chave "<strong>Authorization</strong>" de dentro de <code>axios.defaults.headers</code>. Assim:</p><pre class="prettyprint linenums">delete axios.defaults.headers.Authorization;</pre><p>O case completo agora ficou assim:</p><pre class="prettyprint linenums">case types.LOGIN_FAILURE: {
+  delete axios.defaults.headers.Authorization;
+  const newState = { ...initialState };
+  return newState;
+}</pre><p>Isso garante que usuários que façam login e depois logout, não permaneçam com token ativo após o logout.</p><p>Abaixo o código completo do arquivo <strong>reducer.js</strong>, caso precise:</p><pre class="prettyprint linenums">import * as types from '../types';
+import axios from '../../../services/axios';
+
+const initialState = {
+  isLoggedIn: false,
+  token: false,
+  user: {},
+  isLoading: false,
+};
+
+export default function(state = initialState, action) {
+  switch (action.type) {
+    case types.LOGIN_SUCCESS: {
+      const newState = { ...state };
+      newState.isLoggedIn = true;
+      newState.token = action.payload.token;
+      newState.user = action.payload.user;
+      newState.isLoading = false;
+      return newState;
+    }
+
+    case types.LOGIN_FAILURE: {
+      delete axios.defaults.headers.Authorization;
+      const newState = { ...initialState };
+      return newState;
+    }
+
+    case types.LOGIN_REQUEST: {
+      const newState = { ...state };
+      newState.isLoading = true;
+      return newState;
+    }
+
+    case types.REGISTER_UPDATED_SUCCESS: {
+      const newState = { ...state };
+      newState.user.nome = action.payload.nome;
+      newState.user.email = action.payload.email;
+      newState.isLoading = false;
+      return newState;
+    }
+
+    case types.REGISTER_CREATED_SUCCESS: {
+      const newState = { ...state };
+      newState.isLoading = false;
+      return newState;
+    }
+
+    case types.REGISTER_FAILURE: {
+      const newState = { ...state };
+      newState.isLoading = false;
+      return newState;
+    }
+
+    case types.REGISTER_REQUEST: {
+      const newState = { ...state };
+      newState.isLoading = true;
+      return newState;
+    }
+
+    default: {
+      return state;
+    }
+  }
+}</pre>
