@@ -14,4 +14,6 @@ const com = 10 > 5;
 //     NaN
 // );
 
-console.log('Olá mundo');
+console.log('Salve pessoal do meu curo de JS!');
+console.log('Salve pessoal do meu curo de JS!');
+console.log('Aqui ṕe outro console.log');
