@@ -13,3 +13,5 @@ const com = 10 > 5;
 //     'Brasileirinho' &&
 //     NaN
 // );
+
+console.log('Olá mundo');
